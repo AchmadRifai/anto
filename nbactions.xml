@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-iki</actionName>
+            <displayName>iki</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+                <goal>dependency:sources</goal>
+                <goal>exec:java</goal>
+            </goals>
+        </action>
+    </actions>
