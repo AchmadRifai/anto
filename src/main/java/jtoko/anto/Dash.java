@@ -5,6 +5,7 @@
  */
 package jtoko.anto;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import jtoko.anto.tools.Deleter;
 import jtoko.anto.tools.Loader;
+import jtoko.anto.tools.SuratJalan;
 
 /**
  *
@@ -38,7 +40,7 @@ public class Dash extends javax.swing.JFrame {
     private void initComponents() {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
+        root = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         addBrg = new javax.swing.JButton();
@@ -108,18 +110,18 @@ public class Dash extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout rootLayout = new javax.swing.GroupLayout(root);
+        root.setLayout(rootLayout);
+        rootLayout.setHorizontalGroup(
+            rootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 465, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        rootLayout.setVerticalGroup(
+            rootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 476, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("ROOT", jPanel1);
+        jTabbedPane1.addTab("ROOT", root);
 
         jToolBar1.setRollover(true);
 
@@ -628,6 +630,7 @@ public class Dash extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         new Thread(this::refresh).start();
+        new Thread(this::struke).start();
     }//GEN-LAST:event_formWindowOpened
 
     private void srcbrgKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_srcbrgKeyReleased
@@ -789,7 +792,6 @@ public class Dash extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -812,6 +814,7 @@ public class Dash extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> orderPel;
     private javax.swing.JComboBox<String> orderSup;
     private javax.swing.JButton repJu;
+    private javax.swing.JPanel root;
     private javax.swing.JTextField srcJu;
     private javax.swing.JTextField srcPas;
     private javax.swing.JTextField srcPel;
@@ -923,5 +926,13 @@ public class Dash extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Db.hindar(ex);
         } refresh();
+    }
+
+    private void struke() {
+        if (!SuratJalan.f.exists()) try {
+            SuratJalan.kopi(getClass());
+        } catch (IOException ex) {
+            Db.hindar(ex);
+        }
     }
 }
