@@ -13,6 +13,9 @@ import javax.swing.JOptionPane;
 import jtoko.anto.Db;
 import jtoko.anto.tools.Deleter;
 import jtoko.anto.tools.Loader;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
 
 /**
  *
@@ -20,6 +23,8 @@ import jtoko.anto.tools.Loader;
  */
 public abstract class Add2 extends javax.swing.JDialog {
     private String nota, sBrg;
+    private double totI, kblI;
+    java.awt.Frame par;
 
     public abstract void reload1();
     /**
@@ -27,6 +32,7 @@ public abstract class Add2 extends javax.swing.JDialog {
      */
     public Add2(java.awt.Frame parent, boolean modal, String nota) {
         super(parent, modal);
+        par = parent;
         this.nota = nota;
         initComponents();
     }
@@ -49,6 +55,13 @@ public abstract class Add2 extends javax.swing.JDialog {
         jumJual = new javax.swing.JFormattedTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         itemJu = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        tot = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        kbl = new javax.swing.JTextField();
+        byr = new javax.swing.JFormattedTextField();
+        fin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Item Penjualan");
@@ -146,6 +159,36 @@ public abstract class Add2 extends javax.swing.JDialog {
         ));
         jScrollPane2.setViewportView(itemJu);
 
+        jLabel3.setText("Total");
+
+        tot.setEditable(false);
+        tot.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tot.setText("-");
+
+        jLabel4.setText("Bayar");
+
+        jLabel5.setText("Kembali");
+
+        kbl.setEditable(false);
+        kbl.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        byr.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        byr.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        byr.setText("0");
+        byr.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                byrKeyReleased(evt);
+            }
+        });
+
+        fin.setText("Finish");
+        fin.setEnabled(false);
+        fin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                finActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -154,7 +197,20 @@ public abstract class Add2 extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                    .addComponent(jScrollPane2)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(tot, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
+                            .addComponent(kbl)
+                            .addComponent(byr)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(fin)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -164,7 +220,21 @@ public abstract class Add2 extends javax.swing.JDialog {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(tot, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(byr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(kbl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fin)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -205,6 +275,24 @@ public abstract class Add2 extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jumJualKeyReleased
 
+    private void byrKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_byrKeyReleased
+        if (Deleter.isDoubleValid(byr) && evt.getKeyCode() != KeyEvent.VK_LEFT && evt.getKeyCode() != KeyEvent.VK_RIGHT
+                && !evt.isShiftDown() && !evt.isControlDown() && !"".equals(byr.getText())) {
+            try {
+                Db d = new Db();
+                susuk(d);
+                d.close();
+            } catch (SQLException ex) {
+                Db.hindar(ex);
+            }
+        }
+    }//GEN-LAST:event_byrKeyReleased
+
+    private void finActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finActionPerformed
+        new Thread(this::simpanTrans).start();
+        stun();
+    }//GEN-LAST:event_finActionPerformed
+
     private void hapusNota() {
         try {
             Db d = new Db();
@@ -228,13 +316,13 @@ public abstract class Add2 extends javax.swing.JDialog {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
-        }; tblBrg.setModel(m);
-        try {
+        }; tblBrg.setModel(m); try {
             Db d = new Db();
             java.sql.ResultSet r = d.hasil("select kode,nm,jual,stok,sat from barang where not hapus and stok>0");
             while (r.next()) m.addRow(new String[]{r.getString("kode"), r.getString("nm"), r.getString("jual"), r.getString("stok") +
             ' ' + r.getString("sat")});
             r.close();
+            totalan(d);
             d.close();
         } catch (SQLException ex) {
             Db.hindar(ex);
@@ -246,15 +334,22 @@ public abstract class Add2 extends javax.swing.JDialog {
         jumJual.setText("0");
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JFormattedTextField byr;
+    private javax.swing.JButton fin;
     private javax.swing.JTable itemJu;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JFormattedTextField jumJual;
+    private javax.swing.JTextField kbl;
     private javax.swing.JTextField srcBrg;
     private javax.swing.JTable tblBrg;
+    private javax.swing.JTextField tot;
     // End of variables declaration//GEN-END:variables
 
     private void cariBrg() {
@@ -287,18 +382,28 @@ public abstract class Add2 extends javax.swing.JDialog {
     private void tmpJumJual() {
         try {
             Db d = new Db();
+            double hrg = Loader.hrgBrg(d, sBrg);
             var p = d.prep("select jum from item_ju where nota=? and brg=?");
             p.setString(1, nota);
             p.setString(2, sBrg);
             var r = p.executeQuery();
             if (r.next()) {
-                double hrg = Loader.hrgBrg(d, sBrg);
-                d.exec("update item_ju set jum=" + jumJual.getText() + ",tot=" + (hrg * Double.parseDouble(jumJual.getText())) + " "
-                        + "where nota='" + nota + "' and brg='" + sBrg + "'");
+                var p1 = d.prep("update item_ju set jum=?,tot=?::numeric::money where nota=? and brg=?");
+                p1.setDouble(1, Double.parseDouble(jumJual.getText()));
+                p1.setDouble(2, hrg * Double.parseDouble(jumJual.getText()));
+                p1.setString(3, nota);
+                p1.setString(4, sBrg);
+                p1.execute();
+                p1.close();
             } else {
-                double hrg = Loader.hrgBrg(d, sBrg);
-                d.exec("insert into item_ju values('" + nota + "','" + sBrg + "'," + Double.parseDouble(jumJual.getText()) + 
-                        "," + hrg + "," + (hrg * Double.parseDouble(jumJual.getText())) + ")");
+                var p1 = d.prep("insert into item_ju values(?,?,?,?::numeric::money,?::numeric::money)");
+                p1.setString(1, nota);
+                p1.setString(2, sBrg);
+                p1.setDouble(3, Double.parseDouble(jumJual.getText()));
+                p1.setDouble(4, hrg);
+                p1.setDouble(5, hrg * Double.parseDouble(jumJual.getText()));
+                p1.execute();
+                p1.close();
             } r.close();
             p.close();
             d.close();
@@ -323,6 +428,7 @@ public abstract class Add2 extends javax.swing.JDialog {
             while (r.next()) m.addRow(new String[]{r.getString("brg"), r.getString("jum"), r.getString("sat"), r.getString("tot")});
             r.close();
             p.close();
+            totalan(d);
             d.close();
         } catch (SQLException ex) {
             Db.hindar(ex);
@@ -346,5 +452,96 @@ public abstract class Add2 extends javax.swing.JDialog {
         } catch (SQLException ex) {
             Db.hindar(ex);
         }
+    }
+
+    private void totalan(Db d) throws SQLException {
+        var p = d.prep("select sum(sat*jum)as akeh from item_ju where nota=?");
+        p.setString(1, nota);
+        var r = p.executeQuery();
+        if (r.next()) tot.setText(r.getString("akeh"));
+        else tot.setText("-");
+        r.close();
+        p.close();
+        var p1 = d.prep("select sum(sat*jum)::numeric::float8 as akeh from item_ju where nota=?");
+        p1.setString(1, nota);
+        var r1 = p1.executeQuery();
+        if (r1.next()) {
+            if (null == r1.getBigDecimal("akeh")) totI = 0;
+            else totI = r1.getDouble("akeh");
+        } else totI = 0;
+        r1.close();
+        p1.close();
+        if (!"".equals(byr.getText()) && Deleter.isDoubleValid(byr)) susuk(d);
+    }
+
+    private void susuk(Db d) throws SQLException {
+        double byrI = Double.parseDouble(byr.getText());
+        var p = d.prep("select ?::numeric::money as akeh");
+        kblI = byrI - totI;
+        p.setDouble(1, kblI);
+        var r = p.executeQuery();
+        if (r.next()) kbl.setText(r.getString("akeh"));
+        r.close();
+        p.close();
+        fin.setEnabled(0 < itemJu.getRowCount() && 0 <= kblI);
+    }
+
+    private void stun() {
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        byr.setEnabled(false);
+        fin.setEnabled(false);
+    }
+
+    private void simpanTrans() {
+        try {
+            Db d = new Db();
+            var p = d.prep("update jual set byr=?::numeric::money,tot=?::numeric::money,kbl=?::numeric::money where "
+                    + "nota=? and not hapus");
+            p.setDouble(1, totI + kblI);
+            p.setDouble(2, totI);
+            p.setDouble(3, kblI);
+            p.setString(4, nota);
+            p.execute();
+            p.close();
+            preCetak(d);
+            sudo(d);
+            d.close();
+            setVisible(false);
+        } catch (SQLException | JRException ex) {
+            purify();
+            Db.hindar(ex);
+        }
+    }
+
+    private void purify() {
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        byr.setEnabled(true);
+        fin.setEnabled(true);
+    }
+
+    private void sudo(Db d) throws SQLException {
+        var p = d.prep("select brg,jum from item_ju where nota=?");
+        p.setString(1, nota);
+        var r = p.executeQuery();
+        while (r.next()) {
+            var p1 = d.prep("update barang set stok=stok-? where kode=?");
+            p1.setDouble(1, r.getDouble("jum"));
+            p1.setString(2, r.getString("brg"));
+            p1.execute();
+            p1.close();
+        } r.close();
+        p.close();
+    }
+
+    private void preCetak(Db d) throws JRException {
+        java.util.Map<String,Object>m=new java.util.HashMap<String,Object>();
+        m.put("nota", nota);
+        var lap = new jtoko.anto.tools.Laporan(par, false, JasperFillManager.fillReport(
+                JasperCompileManager.compileReport(jtoko.anto.tools.SuratJalan.f.getAbsolutePath()), m, d.getC())) {
+            @Override
+            public void reload() {
+                reload1();
+            }
+        }; lap.setVisible(true);
     }
 }
