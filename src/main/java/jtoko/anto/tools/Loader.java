@@ -290,4 +290,17 @@ public class Loader {
         return h;
     }
 
+    public static void muatMinStok(Db d, JTable tbl) throws SQLException {
+        var m = new javax.swing.table.DefaultTableModel(new String[]{"Kode", "Nama", "Harga", "Stok"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        }; tbl.setModel(m);
+        java.sql.ResultSet r = d.hasil("select kode,nm,jual,stok,sat from barang where not hapus order by stok");
+        while (r.next()) m.addRow(new String[]{r.getString("kode"), r.getString("nm"), r.getString("jual"),
+        r.getString("stok") + ' ' + r.getString("sat")});
+        r.close();
+    }
+
 }

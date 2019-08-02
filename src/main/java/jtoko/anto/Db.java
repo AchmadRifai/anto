@@ -7,12 +7,10 @@ package jtoko.anto;
 
 import java.io.FileNotFoundException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,10 +21,10 @@ import java.util.logging.Logger;
 public class Db {
 
     public static void hindar(Exception ex) {
-        Time t = Time.valueOf(LocalTime.now());
-        Date d = Date.valueOf(LocalDate.now());
-        java.io.File f = new java.io.File(System.getProperty("user.home") + "/.anto/error/" + d + '/' + t.getHours() + 'a' + t.getMinutes() +
-                'a' + t.getSeconds() + ".log");
+        java.sql.Timestamp t = Timestamp.valueOf(LocalDateTime.now());
+        java.sql.Date d = new java.sql.Date(t.getTime());
+        java.io.File f = new java.io.File(System.getProperty("user.home") + "/.anto/error/" + d + '/' +
+                t.getHours() + 'a' + t.getMinutes() + 'a' + t.getSeconds() + 'b' + t.getNanos() + ".log");
         if (!f.getParentFile().exists()) f.getParentFile().mkdirs();
         if (f.exists()) f.delete(); try (java.io.PrintWriter w = new java.io.PrintWriter(f)) {
             ex.printStackTrace(w);

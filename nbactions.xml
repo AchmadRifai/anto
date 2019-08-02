@@ -7,7 +7,7 @@
                 <goal>clean</goal>
                 <goal>install</goal>
                 <goal>dependency:sources</goal>
-                <goal>exec:java</goal>
+                <goal>spring-boot:run</goal>
             </goals>
         </action>
     </actions>

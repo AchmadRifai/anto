@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import jtoko.anto.tools.Analizer;
 import jtoko.anto.tools.Deleter;
 import jtoko.anto.tools.Loader;
 import jtoko.anto.tools.SuratJalan;
@@ -21,6 +22,7 @@ import jtoko.anto.tools.SuratJalan;
  */
 public class Dash extends javax.swing.JFrame {
     private String sJu, sPel, sBrg, sSup, Spas;
+    private java.util.concurrent.ThreadPoolExecutor tpe;
 
     /**
      * Creates new form Dash
@@ -38,9 +40,14 @@ public class Dash extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         root = new javax.swing.JPanel();
+        jToolBar6 = new javax.swing.JToolBar();
+        jButton1 = new javax.swing.JButton();
+        brgLaku = new javax.swing.JPanel();
+        pnlLaba = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         addBrg = new javax.swing.JButton();
@@ -110,16 +117,53 @@ public class Dash extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout rootLayout = new javax.swing.GroupLayout(root);
-        root.setLayout(rootLayout);
-        rootLayout.setHorizontalGroup(
-            rootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 465, Short.MAX_VALUE)
+        root.setLayout(new java.awt.GridBagLayout());
+
+        jToolBar6.setRollover(true);
+
+        jButton1.setText("QUIT");
+        jButton1.setFocusable(false);
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar6.add(jButton1);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        root.add(jToolBar6, gridBagConstraints);
+
+        brgLaku.setBorder(javax.swing.BorderFactory.createTitledBorder("Barang Laku Bulan Ini"));
+        brgLaku.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        root.add(brgLaku, gridBagConstraints);
+
+        pnlLaba.setBorder(javax.swing.BorderFactory.createTitledBorder("Laba 7 Hari Terakhir"));
+
+        javax.swing.GroupLayout pnlLabaLayout = new javax.swing.GroupLayout(pnlLaba);
+        pnlLaba.setLayout(pnlLabaLayout);
+        pnlLabaLayout.setHorizontalGroup(
+            pnlLabaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 534, Short.MAX_VALUE)
         );
-        rootLayout.setVerticalGroup(
-            rootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 476, Short.MAX_VALUE)
+        pnlLabaLayout.setVerticalGroup(
+            pnlLabaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 269, Short.MAX_VALUE)
         );
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        root.add(pnlLaba, gridBagConstraints);
 
         jTabbedPane1.addTab("ROOT", root);
 
@@ -213,7 +257,7 @@ public class Dash extends javax.swing.JFrame {
                         .addComponent(orderBrg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(descBrg)
-                        .addGap(0, 60, Short.MAX_VALUE)))
+                        .addGap(0, 283, Short.MAX_VALUE)))
                 .addContainerGap())
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
@@ -229,7 +273,7 @@ public class Dash extends javax.swing.JFrame {
                     .addComponent(orderBrg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(descBrg))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("BARANG", jPanel2);
@@ -340,7 +384,7 @@ public class Dash extends javax.swing.JFrame {
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tglJu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 57, Short.MAX_VALUE)))
+                        .addGap(0, 280, Short.MAX_VALUE)))
                 .addContainerGap())
             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
@@ -360,7 +404,7 @@ public class Dash extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(tglJu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("JUAL", jPanel3);
@@ -435,7 +479,7 @@ public class Dash extends javax.swing.JFrame {
                     .addComponent(orderPel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(descPel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("PELANGGAN", jPanel4);
@@ -496,7 +540,7 @@ public class Dash extends javax.swing.JFrame {
                         .addComponent(descSup)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -510,7 +554,7 @@ public class Dash extends javax.swing.JFrame {
                     .addComponent(orderSup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(descSup))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("PEMASOK", jPanel5);
@@ -586,7 +630,7 @@ public class Dash extends javax.swing.JFrame {
                                 .addComponent(tglPas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -604,7 +648,7 @@ public class Dash extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addComponent(tglPas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE))
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("PASOKAN", jPanel6);
@@ -630,7 +674,6 @@ public class Dash extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         new Thread(this::refresh).start();
-        new Thread(this::struke).start();
     }//GEN-LAST:event_formWindowOpened
 
     private void srcbrgKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_srcbrgKeyReleased
@@ -769,6 +812,7 @@ public class Dash extends javax.swing.JFrame {
     private javax.swing.JButton addPas;
     private javax.swing.JButton addPel;
     private javax.swing.JButton addSup;
+    private javax.swing.JPanel brgLaku;
     private javax.swing.JButton delBrg;
     private javax.swing.JButton delJu;
     private javax.swing.JButton delPas;
@@ -785,6 +829,7 @@ public class Dash extends javax.swing.JFrame {
     private javax.swing.JButton editPas;
     private javax.swing.JButton editPel;
     private javax.swing.JButton editSup;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -808,11 +853,13 @@ public class Dash extends javax.swing.JFrame {
     private javax.swing.JToolBar jToolBar3;
     private javax.swing.JToolBar jToolBar4;
     private javax.swing.JToolBar jToolBar5;
+    private javax.swing.JToolBar jToolBar6;
     private javax.swing.JComboBox<String> orderBrg;
     private javax.swing.JComboBox<String> orderJu;
     private javax.swing.JComboBox<String> orderPas;
     private javax.swing.JComboBox<String> orderPel;
     private javax.swing.JComboBox<String> orderSup;
+    private javax.swing.JPanel pnlLaba;
     private javax.swing.JButton repJu;
     private javax.swing.JPanel root;
     private javax.swing.JTextField srcJu;
@@ -836,20 +883,23 @@ public class Dash extends javax.swing.JFrame {
         sJu = null;
         sPel = null;
         sSup = null;
+        Analizer.brgNull(brgLaku);
+        Analizer.brgNull(pnlLaba);
+        tpe = new java.util.concurrent.ScheduledThreadPoolExecutor(40);
     }
 
     private void refresh() {
-        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR)); try {
-            Db d = new Db();
-            muatBarang(d);
-            muatJual(d);
-            muatPel(d);
-            muatSup(d);
-            muatPas(d);
-            d.close();
-        } catch (SQLException ex) {
-            Db.hindar(ex);
-        } setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        tpe.execute(this::muatAnalisa);
+        tpe.execute(this::muatLaba);
+        tpe.execute(this::struke);
+        tpe.execute(this::muatBarang);
+        tpe.execute(this::muatJual);
+        tpe.execute(this::muatPel);
+        tpe.execute(this::muatSup);
+        tpe.execute(this::muatPas);
+        while (0 < tpe.getActiveCount()) {}
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }
 
     private void muatBarang(Db d) throws SQLException {
@@ -932,6 +982,76 @@ public class Dash extends javax.swing.JFrame {
         if (!SuratJalan.f.exists()) try {
             SuratJalan.kopi(getClass());
         } catch (IOException ex) {
+            Db.hindar(ex);
+        }
+    }
+
+    private void muatBarang() {
+        try {
+            Db d = new Db();
+            muatBarang(d);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        }
+    }
+
+    private void muatAnalisa() {
+        try {
+            Db d = new Db();
+            Analizer.brg10Laku(d, brgLaku);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        }
+    }
+
+    private void muatJual() {
+        try {
+            Db d = new Db();
+            muatJual(d);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        }
+    }
+
+    private void muatPel() {
+        try {
+            Db d = new Db();
+            muatPel(d);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        }
+    }
+
+    private void muatSup() {
+        try {
+            Db d = new Db();
+            muatSup(d);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        }
+    }
+
+    private void muatPas() {
+        try {
+            Db d = new Db();
+            muatPas(d);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        }
+    }
+
+    private void muatLaba() {
+        try {
+            Db d = new Db();
+            Analizer.laba7h(d, pnlLaba);
+            d.close();
+        } catch (SQLException ex) {
             Db.hindar(ex);
         }
     }
