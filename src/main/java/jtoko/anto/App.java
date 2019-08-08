@@ -20,11 +20,11 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 @org.springframework.boot.autoconfigure.SpringBootApplication
 public class App {
     public static void main(String[]a) {
-        //var ctx = new SpringApplicationBuilder(Dash.class).headless(false).run(a);
-        //EventQueue.invokeLater(()->{
-        //    ctx.getBean(Dash.class).setVisible(true);
-        //});
-        testUang();
+        var ctx = new SpringApplicationBuilder(Dash.class).headless(false).run(a);
+        EventQueue.invokeLater(()->{
+            ctx.getBean(Dash.class).setVisible(true);
+        });
+        //testUang();
     }
 
     private static void testUang() {
