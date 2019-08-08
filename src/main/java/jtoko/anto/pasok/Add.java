@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jtoko.anto.jual;
+package jtoko.anto.pasok;
 
 import java.awt.Color;
 import java.sql.Date;
@@ -11,8 +11,6 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jtoko.anto.Db;
 import jtoko.anto.tools.Deleter;
 
@@ -20,18 +18,16 @@ import jtoko.anto.tools.Deleter;
  *
  * @author ashura
  */
-public abstract class Add1 extends javax.swing.JDialog {
-    private final java.awt.Frame f;
+public abstract class Add extends javax.swing.JDialog {
 
     public abstract void reload();
+    private java.awt.Frame p;
     /**
-     * Creates new form Add1
-     * @param parent
-     * @param modal
+     * Creates new form Add
      */
-    public Add1(java.awt.Frame parent, boolean modal) {
+    public Add(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        f = parent;
+        p = parent;
         initComponents();
     }
 
@@ -45,22 +41,20 @@ public abstract class Add1 extends javax.swing.JDialog {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        pel = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        sup = new javax.swing.JComboBox<>();
         nama = new javax.swing.JTextField();
-        nik = new javax.swing.JTextField();
-        tlp = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         almt = new javax.swing.JTextArea();
+        telp = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        tgl = new javax.swing.JFormattedTextField();
         n = new javax.swing.JButton();
-        tgl = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Pemilihan Pelanggan");
+        setTitle("Tambah Pasokan Baru");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -70,35 +64,39 @@ public abstract class Add1 extends javax.swing.JDialog {
             }
         });
 
-        jLabel1.setText("Kode Pelanggan");
+        jLabel1.setText("Pilih Suplier :");
 
-        pel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pilih Satu :" }));
-        pel.addItemListener(new java.awt.event.ItemListener() {
+        jLabel2.setText("Nama :");
+
+        jLabel3.setText("Alamat :");
+
+        sup.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pilih Satu :" }));
+        sup.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                pelItemStateChanged(evt);
+                supItemStateChanged(evt);
             }
         });
 
-        jLabel2.setText("Nama");
-
-        jLabel3.setText("NIK");
-
-        jLabel4.setText("Telp");
-
-        jLabel5.setText("Tanggal");
-
-        jLabel6.setText("Alamat");
-
         nama.setEditable(false);
-
-        nik.setEditable(false);
-
-        tlp.setEditable(false);
 
         almt.setEditable(false);
         almt.setColumns(20);
         almt.setRows(5);
         jScrollPane1.setViewportView(almt);
+
+        telp.setEditable(false);
+
+        jLabel4.setText("No. Telp :");
+
+        jLabel5.setText("Tanggal :");
+
+        tgl.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("yyyy-MM-dd"))));
+        tgl.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tgl.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tglKeyReleased(evt);
+            }
+        });
 
         n.setText("Next");
         n.setEnabled(false);
@@ -121,21 +119,16 @@ public abstract class Add1 extends javax.swing.JDialog {
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5))
+                        .addGap(37, 37, 37)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(telp)
+                            .addComponent(jScrollPane1)
                             .addComponent(nama)
-                            .addComponent(pel, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(nik)
-                            .addComponent(tlp)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(tgl)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(n)))
+                            .addComponent(sup, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(tgl))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(n, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -144,27 +137,23 @@ public abstract class Add1 extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(pel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(nama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
-                    .addComponent(nik, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(tlp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(telp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(tgl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(n)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -179,23 +168,25 @@ public abstract class Add1 extends javax.swing.JDialog {
     }//GEN-LAST:event_formWindowClosing
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        pel.setEnabled(false);
-        tgl.setEnabled(false);
-        new Thread(this::muatSemua).start();
+        stun();
+        new Thread(this::muatSek).start();
     }//GEN-LAST:event_formWindowOpened
 
-    private void pelItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_pelItemStateChanged
-        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        new Thread(this::pilihPel).start();
-    }//GEN-LAST:event_pelItemStateChanged
+    private void supItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_supItemStateChanged
+        stun();
+        new Thread(this::muatSup).start();
+    }//GEN-LAST:event_supItemStateChanged
+
+    private void tglKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tglKeyReleased
+        if (!"".equals(tgl.getText())) {
+            if (Deleter.isDateValid(tgl)) tgl.setForeground(Color.BLACK);
+            else tgl.setForeground(Color.red);
+        } refresh();
+    }//GEN-LAST:event_tglKeyReleased
 
     private void nActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nActionPerformed
-        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        pel.setEnabled(false);
-        tgl.setEnabled(false);
-        n.setEnabled(false);
-        new Thread(this::savingStrk).start();
+        stun();
+        new Thread(this::lanjut).start();
     }//GEN-LAST:event_nActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -205,97 +196,108 @@ public abstract class Add1 extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton n;
     private javax.swing.JTextField nama;
-    private javax.swing.JTextField nik;
-    private javax.swing.JComboBox<String> pel;
-    private javax.swing.JTextField tgl;
-    private javax.swing.JTextField tlp;
+    private javax.swing.JComboBox<String> sup;
+    private javax.swing.JTextField telp;
+    private javax.swing.JFormattedTextField tgl;
     // End of variables declaration//GEN-END:variables
 
-    private void muatSemua() {
-        Date t = Date.valueOf(LocalDate.now());
-        tgl.setText(t.toString()); try {
+    private void stun() {
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        n.setEnabled(false);
+        sup.setEnabled(false);
+        tgl.setEnabled(false);
+    }
+
+    private void muatSek() {
+        var t = Date.valueOf(LocalDate.now()); try {
             Db d = new Db();
-            pel.setSelectedIndex(0);
-            for (int i = pel.getItemCount() - 1; i > 0; i--) pel.removeItemAt(i);
-            java.sql.ResultSet r = d.hasil("select kode from pelanggan where not hapus");
-            while (r.next()) pel.addItem(r.getString("kode"));
+            var r = d.hasil("select kode from suplier where not hapus order by kode");
+            while (r.next()) sup.addItem(r.getString("kode"));
             r.close();
             d.close();
         } catch (SQLException ex) {
             Db.hindar(ex);
-        } refresh();
-        pel.setEnabled(true);
+        } tgl.setText("" + t);
+        sup.setSelectedIndex(0);
+        purify();
+    }
+
+    private void purify() {
+        sup.setEnabled(true);
         tgl.setEnabled(true);
+        refresh();
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }
 
     private void refresh() {
-        n.setEnabled(0 < pel.getSelectedIndex() && !"".equals(tgl.getText()));
+        n.setEnabled(0 < sup.getSelectedIndex() && !"".equals(tgl.getText()));
         if (n.isEnabled()) n.setEnabled(Deleter.isDateValid(tgl));
-        if (!Deleter.isDateValid(tgl)) tgl.setForeground(Color.red);
-        else tgl.setForeground(Color.BLACK);
     }
 
-    private void pilihPel() {
-        try {
+    private void muatSup() {
+        if (0 < sup.getSelectedIndex()) try {
             Db d = new Db();
-            java.sql.PreparedStatement p = d.prep("select*from pelanggan where kode=? and not hapus");
-            p.setString(1, pel.getItemAt(pel.getSelectedIndex()));
-            java.sql.ResultSet r = p.executeQuery();
+            var p = d.prep("select nama,almt,tlp from suplier where kode=? and not hapus");
+            p.setString(1, sup.getItemAt(sup.getSelectedIndex()));
+            var r = p.executeQuery();
             if (r.next()) {
                 nama.setText(r.getString("nama"));
-                nik.setText(r.getString("nik"));
-                tlp.setText(r.getString("tlp"));
                 almt.setText(r.getString("almt"));
+                telp.setText(r.getString("tlp"));
             } r.close();
             p.close();
             d.close();
         } catch (SQLException ex) {
             Db.hindar(ex);
-        } refresh();
-        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        } else {
+            nama.setText("");
+            almt.setText("");
+            telp.setText("");
+        } purify();
     }
 
-    private void savingStrk() {
-        Time j = Time.valueOf(LocalTime.now()); try {
+    private void lanjut() {
+        var t = Time.valueOf(LocalTime.now()); try {
             Db d = new Db();
-            String nota = genNota(d);
-            java.sql.PreparedStatement p = d.prep("insert into jual values(?,?,?,?,0,0,0,?,?)");
-            p.setString(1, nota);
-            p.setDate(2, Date.valueOf(LocalDate.parse(tgl.getText())));
-            p.setTime(3, j);
-            p.setString(4, pel.getItemAt(pel.getSelectedIndex()));
-            p.setString(5, "-");
-            p.setBoolean(6, false);
+            String kode = genKode(d);
+            var p = d.prep("insert into pasok values(?,?,?,?,0,'Tunai',?)");
+            p.setString(1, kode);
+            p.setDate(2, Date.valueOf(tgl.getText()));
+            p.setTime(3, t);
+            p.setString(4, sup.getItemAt(sup.getSelectedIndex()));
+            p.setBoolean(5, false);
             p.execute();
             p.close();
             d.close();
-            Add2 a = new Add2(f, false, nota){
-                @Override
-                public void reload1() {
-                    reload();
-                }
-            }; a.setVisible(true);
-            setVisible(false);
+            pindah(kode);
         } catch (SQLException ex) {
+            purify();
             Db.hindar(ex);
-        } reload();
+        }
     }
 
-    private String genNota(Db d) throws SQLException {
-        String s = pel.getItemAt(pel.getSelectedIndex());
-        Date t = Date.valueOf(LocalDate.parse(tgl.getText()));
-        s += '_' + t.getTime() + 'b';
-        java.sql.PreparedStatement p = d.prep("select count(nota)as a from jual where tgl=?");
+    private String genKode(Db d) throws SQLException {
+        var t = Date.valueOf(tgl.getText());
+        String s = sup.getItemAt(sup.getSelectedIndex()) + 'a' + t.getTime();
+        var p = d.prep("select count(kode)as akeh from pasok where tgl=?");
         p.setDate(1, t);
-        java.sql.ResultSet r = p.executeQuery();
-        if (r.next()) s += r.getString("a");
+        var r = p.executeQuery();
+        if (r.next()) s += 'b' + r.getString("akeh");
         r.close();
         p.close();
         return s;
+    }
+
+    private void pindah(String kode) {
+        var i = new jtoko.anto.pasok.Items(p, false, kode) {
+            @Override
+            public void reload1() {
+                reload();
+            }
+        }; i.setVisible(true);
+        setVisible(false);
     }
 }

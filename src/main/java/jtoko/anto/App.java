@@ -6,13 +6,10 @@
 package jtoko.anto;
 
 import java.awt.EventQueue;
-import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import jtoko.anto.tools.Analizer;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 
@@ -23,32 +20,28 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 @org.springframework.boot.autoconfigure.SpringBootApplication
 public class App {
     public static void main(String[]a) {
-        var ctx = new SpringApplicationBuilder(Dash.class).headless(false).run(a);
-        EventQueue.invokeLater(()->{
-            ctx.getBean(Dash.class).setVisible(true);
-        });
-        //try {
-            //Db d = new Db();
-            //var kbl = new java.math.BigDecimal("4").min(BigDecimal.ONE);
-            //var p = d.prep("select ?::numeric::money as akeh");
-            //p.setBigDecimal(1, kbl);
-            //var r = p.executeQuery();
-            //System.out.println(kbl);
-            //if (r.next()) System.out.println(r.getString("akeh"));
-            //r.close();
-            //p.close();
-          //  d.close();
-//            Db d = new Db();
-//            for (jtoko.anto.beans.BrgJual b:Analizer.brgTerjualBln(d)) {
-//                System.out.println("A : " + b.getNama());
-//                System.out.println("B : " + b.getQty() + "\n");
-//            }
-//            d.close();
-//        } catch (SQLException ex) {
-//            ex.printStackTrace();
-//        }
-        //} catch (SQLException ex) {
-          //  Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-        //}
+        //var ctx = new SpringApplicationBuilder(Dash.class).headless(false).run(a);
+        //EventQueue.invokeLater(()->{
+        //    ctx.getBean(Dash.class).setVisible(true);
+        //});
+        testUang();
+    }
+
+    private static void testUang() {
+        try {
+            Db d = new Db();
+            var p = d.prep("select sum(jual) as a from barang where hapus=?");
+            p.setBoolean(1, false);
+            var r = p.executeQuery();
+            if (r.next()) {
+                jtoko.anto.tools.Uang u = new jtoko.anto.tools.Uang(r.getString("a"));
+                System.out.println(u.toLong());
+                System.out.println(u.toString());
+            } r.close();
+            p.close();
+            d.close();
+        } catch (SQLException | ParseException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

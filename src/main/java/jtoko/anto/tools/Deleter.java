@@ -73,5 +73,21 @@ public class Deleter {
             Db.hindar(e);
         } return b;
     }
+
+    public static void magicPel(Db d, String sPel) throws SQLException {
+        var p = d.prep("update pelanggan set hapus=? where kode=?");
+        p.setBoolean(1, true);
+        p.setString(2, sPel);
+        p.execute();
+        p.close();
+    }
+
+    public static void magicSup(Db d, String sSup) throws SQLException {
+        var p = d.prep("update suplier set hapus=? where kode=?");
+        p.setBoolean(1, true);
+        p.setString(2, sSup);
+        p.execute();
+        p.close();
+    }
     
 }

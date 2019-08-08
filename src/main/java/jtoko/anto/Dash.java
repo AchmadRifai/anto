@@ -15,6 +15,9 @@ import jtoko.anto.tools.Analizer;
 import jtoko.anto.tools.Deleter;
 import jtoko.anto.tools.Loader;
 import jtoko.anto.tools.SuratJalan;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
 
 /**
  *
@@ -296,6 +299,11 @@ public class Dash extends javax.swing.JFrame {
         editJu.setFocusable(false);
         editJu.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         editJu.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        editJu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editJuActionPerformed(evt);
+            }
+        });
         jToolBar2.add(editJu);
 
         delJu.setText("Hapus");
@@ -315,6 +323,11 @@ public class Dash extends javax.swing.JFrame {
         repJu.setFocusable(false);
         repJu.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         repJu.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        repJu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                repJuActionPerformed(evt);
+            }
+        });
         jToolBar2.add(repJu);
 
         jLabel2.setText("Cari Jual Dari Nota");
@@ -415,6 +428,11 @@ public class Dash extends javax.swing.JFrame {
         addPel.setFocusable(false);
         addPel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         addPel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        addPel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addPelActionPerformed(evt);
+            }
+        });
         jToolBar3.add(addPel);
 
         editPel.setText("Edit");
@@ -422,6 +440,11 @@ public class Dash extends javax.swing.JFrame {
         editPel.setFocusable(false);
         editPel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         editPel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        editPel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editPelActionPerformed(evt);
+            }
+        });
         jToolBar3.add(editPel);
 
         delPel.setText("Hapus");
@@ -429,6 +452,11 @@ public class Dash extends javax.swing.JFrame {
         delPel.setFocusable(false);
         delPel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         delPel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        delPel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                delPelActionPerformed(evt);
+            }
+        });
         jToolBar3.add(delPel);
 
         jLabel4.setText("Cari Pelanggan Dari Nama");
@@ -445,6 +473,11 @@ public class Dash extends javax.swing.JFrame {
 
             }
         ));
+        tblPel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblPelMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(tblPel);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -490,6 +523,11 @@ public class Dash extends javax.swing.JFrame {
         addSup.setFocusable(false);
         addSup.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         addSup.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        addSup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addSupActionPerformed(evt);
+            }
+        });
         jToolBar4.add(addSup);
 
         editSup.setText("Edit");
@@ -497,6 +535,11 @@ public class Dash extends javax.swing.JFrame {
         editSup.setFocusable(false);
         editSup.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         editSup.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        editSup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editSupActionPerformed(evt);
+            }
+        });
         jToolBar4.add(editSup);
 
         delSup.setText("Hapus");
@@ -504,6 +547,11 @@ public class Dash extends javax.swing.JFrame {
         delSup.setFocusable(false);
         delSup.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         delSup.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        delSup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                delSupActionPerformed(evt);
+            }
+        });
         jToolBar4.add(delSup);
 
         jLabel5.setText("Cari Pemasok Dari Nama");
@@ -520,6 +568,11 @@ public class Dash extends javax.swing.JFrame {
                 "Kode", "Nama", "Alamat", "Telp"
             }
         ));
+        tblSup.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblSupMouseClicked(evt);
+            }
+        });
         jScrollPane4.setViewportView(tblSup);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -565,6 +618,11 @@ public class Dash extends javax.swing.JFrame {
         addPas.setFocusable(false);
         addPas.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         addPas.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        addPas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addPasActionPerformed(evt);
+            }
+        });
         jToolBar5.add(addPas);
 
         editPas.setText("Edit");
@@ -751,6 +809,7 @@ public class Dash extends javax.swing.JFrame {
     private void delBrgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delBrgActionPerformed
         int g = JOptionPane.showConfirmDialog(rootPane, "Apa anda ingin menghapus barang ini?", "HAPUS?", JOptionPane.YES_NO_OPTION);
         if (g == JOptionPane.YES_OPTION) new Thread(this::hapusBrgIni).start();
+        else new Thread(this::refresh).start();
     }//GEN-LAST:event_delBrgActionPerformed
 
     private void tblBrgMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBrgMouseClicked
@@ -804,7 +863,98 @@ public class Dash extends javax.swing.JFrame {
     private void delJuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delJuActionPerformed
         int g = JOptionPane.showConfirmDialog(rootPane, "Apa anda ingin menghapus barang ini?", "HAPUS?", JOptionPane.YES_NO_OPTION);
         if (g == JOptionPane.YES_OPTION) new Thread(this::hapusJuIni).start();
+        else new Thread(this::refresh).start();
     }//GEN-LAST:event_delJuActionPerformed
+
+    private void repJuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_repJuActionPerformed
+        new Thread(this::laporkan).start();
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        repJu.setEnabled(false);
+    }//GEN-LAST:event_repJuActionPerformed
+
+    private void editJuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editJuActionPerformed
+        jtoko.anto.jual.Edit e = new jtoko.anto.jual.Edit(this, false, sJu) {
+            @Override
+            public void reload() {
+                refresh();
+            }
+        }; e.setVisible(true);
+    }//GEN-LAST:event_editJuActionPerformed
+
+    private void tblPelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPelMouseClicked
+        int s = tblPel.getSelectedRow();
+        if (tblPel.isRowSelected(s)) {
+            sPel = "" + tblPel.getValueAt(s, 0);
+            delPel.setEnabled(true);
+            editPel.setEnabled(true);
+        }
+    }//GEN-LAST:event_tblPelMouseClicked
+
+    private void delPelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delPelActionPerformed
+        int g = JOptionPane.showConfirmDialog(rootPane, "Apa anda ingin menghapus pelanggan ini?", "HAPUS?", JOptionPane.YES_NO_OPTION);
+        if (g == JOptionPane.YES_OPTION) new Thread(this::hapusPelIni).start();
+        else new Thread(this::refresh).start();
+    }//GEN-LAST:event_delPelActionPerformed
+
+    private void addPelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPelActionPerformed
+        var a = new jtoko.anto.pel.Addd(this, false) {
+            @Override
+            public void reload() {
+                refresh();
+            }
+        }; a.setVisible(true);
+    }//GEN-LAST:event_addPelActionPerformed
+
+    private void editPelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPelActionPerformed
+        var e = new jtoko.anto.pel.Edit(this, false, sPel) {
+            @Override
+            public void reload() {
+                refresh();
+            }
+        }; e.setVisible(true);
+    }//GEN-LAST:event_editPelActionPerformed
+
+    private void delSupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delSupActionPerformed
+        int g = JOptionPane.showConfirmDialog(rootPane, "Apa anda ingin menghapus suplier ini?", "HAPUS?", JOptionPane.YES_NO_OPTION);
+        if (g == JOptionPane.YES_OPTION) new Thread(this::hapusSupIni).start();
+        else new Thread(this::refresh).start();
+    }//GEN-LAST:event_delSupActionPerformed
+
+    private void tblSupMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSupMouseClicked
+        int s = tblSup.getSelectedRow();
+        if (tblSup.isRowSelected(s)) {
+            sSup = "" + tblSup.getValueAt(s, 0);
+            editSup.setEnabled(true);
+            delSup.setEnabled(true);
+        }
+    }//GEN-LAST:event_tblSupMouseClicked
+
+    private void addSupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSupActionPerformed
+        var a = new jtoko.anto.sup.Add(this, false) {
+            @Override
+            public void reload() {
+                refresh();
+            }
+        }; a.setVisible(true);
+    }//GEN-LAST:event_addSupActionPerformed
+
+    private void editSupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSupActionPerformed
+        var e = new jtoko.anto.sup.Edit(this, false, sSup) {
+            @Override
+            public void reload() {
+                refresh();
+            }
+        }; e.setVisible(true);
+    }//GEN-LAST:event_editSupActionPerformed
+
+    private void addPasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPasActionPerformed
+        var a = new jtoko.anto.pasok.Add(this, false) {
+            @Override
+            public void reload() {
+                refresh();
+            }
+        }; a.setVisible(true);
+    }//GEN-LAST:event_addPasActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addBrg;
@@ -1054,5 +1204,41 @@ public class Dash extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Db.hindar(ex);
         }
+    }
+
+    private void laporkan() {
+        java.util.Map<String,Object> m = new java.util.HashMap<>();
+        m.put("nota", sJu); try {
+            Db d = new Db();
+            var c = JasperCompileManager.compileReport(jtoko.anto.tools.SuratJalan.f.getCanonicalPath());
+            var l = new jtoko.anto.tools.Laporan(this, false, JasperFillManager.fillReport(c, m, d.getC())) {
+            @Override
+            public void reload() {
+                refresh();
+            } }; l.setVisible(true);
+            d.close();
+        } catch (SQLException | JRException | IOException ex) {
+            Db.hindar(ex);
+        }
+    }
+
+    private void hapusPelIni() {
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR)); try {
+            Db d = new Db();
+            Deleter.magicPel(d, sPel);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        } refresh();
+    }
+
+    private void hapusSupIni() {
+        try {
+            Db d = new Db();
+            Deleter.magicSup(d, sSup);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        } refresh();
     }
 }

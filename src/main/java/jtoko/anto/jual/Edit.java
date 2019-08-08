@@ -8,9 +8,7 @@ package jtoko.anto.jual;
 import java.awt.Color;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jtoko.anto.Db;
@@ -20,18 +18,18 @@ import jtoko.anto.tools.Deleter;
  *
  * @author ashura
  */
-public abstract class Add1 extends javax.swing.JDialog {
-    private final java.awt.Frame f;
+public abstract class Edit extends javax.swing.JDialog {
 
     public abstract void reload();
+    private String nota;
+    private java.awt.Frame par;
     /**
-     * Creates new form Add1
-     * @param parent
-     * @param modal
+     * Creates new form Edit
      */
-    public Add1(java.awt.Frame parent, boolean modal) {
+    public Edit(java.awt.Frame parent, boolean modal, String nota) {
         super(parent, modal);
-        f = parent;
+        par = parent;
+        this.nota = nota;
         initComponents();
     }
 
@@ -47,20 +45,20 @@ public abstract class Add1 extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         pel = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         nama = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
         nik = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
         tlp = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        tgl = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         almt = new javax.swing.JTextArea();
         n = new javax.swing.JButton();
-        tgl = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Pemilihan Pelanggan");
+        setTitle("Form Edit Penjualan");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -81,19 +79,25 @@ public abstract class Add1 extends javax.swing.JDialog {
 
         jLabel2.setText("Nama");
 
-        jLabel3.setText("NIK");
-
-        jLabel4.setText("Telp");
-
-        jLabel5.setText("Tanggal");
-
-        jLabel6.setText("Alamat");
-
         nama.setEditable(false);
+
+        jLabel3.setText("NIK");
 
         nik.setEditable(false);
 
+        jLabel4.setText("Telp");
+
         tlp.setEditable(false);
+
+        jLabel5.setText("Tanggal");
+
+        tgl.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tglKeyReleased(evt);
+            }
+        });
+
+        jLabel6.setText("Alamat");
 
         almt.setEditable(false);
         almt.setColumns(20);
@@ -171,8 +175,20 @@ public abstract class Add1 extends javax.swing.JDialog {
         );
 
         pack();
-        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void pelItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_pelItemStateChanged
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        new Thread(this::pilihPel).start();
+    }//GEN-LAST:event_pelItemStateChanged
+
+    private void nActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nActionPerformed
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        new Thread(this::savingStrk).start();
+        pel.setEnabled(false);
+        tgl.setEnabled(false);
+        n.setEnabled(false);
+    }//GEN-LAST:event_nActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         new Thread(this::reload).start();
@@ -182,21 +198,12 @@ public abstract class Add1 extends javax.swing.JDialog {
         setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
         pel.setEnabled(false);
         tgl.setEnabled(false);
-        new Thread(this::muatSemua).start();
+        new Thread(this::muatAll).start();
     }//GEN-LAST:event_formWindowOpened
 
-    private void pelItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_pelItemStateChanged
-        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        new Thread(this::pilihPel).start();
-    }//GEN-LAST:event_pelItemStateChanged
-
-    private void nActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nActionPerformed
-        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        pel.setEnabled(false);
-        tgl.setEnabled(false);
-        n.setEnabled(false);
-        new Thread(this::savingStrk).start();
-    }//GEN-LAST:event_nActionPerformed
+    private void tglKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tglKeyReleased
+        refresh();
+    }//GEN-LAST:event_tglKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea almt;
@@ -215,7 +222,7 @@ public abstract class Add1 extends javax.swing.JDialog {
     private javax.swing.JTextField tlp;
     // End of variables declaration//GEN-END:variables
 
-    private void muatSemua() {
+    private void muatAll() {
         Date t = Date.valueOf(LocalDate.now());
         tgl.setText(t.toString()); try {
             Db d = new Db();
@@ -224,6 +231,7 @@ public abstract class Add1 extends javax.swing.JDialog {
             java.sql.ResultSet r = d.hasil("select kode from pelanggan where not hapus");
             while (r.next()) pel.addItem(r.getString("kode"));
             r.close();
+            muatJual(d);
             d.close();
         } catch (SQLException ex) {
             Db.hindar(ex);
@@ -231,6 +239,19 @@ public abstract class Add1 extends javax.swing.JDialog {
         pel.setEnabled(true);
         tgl.setEnabled(true);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }
+
+    private void muatJual(Db d) throws SQLException {
+        setTitle("Edit Penjualan " + nota);
+        var p = d.prep("select pel,tgl from jual where nota=?");
+        p.setString(1, nota);
+        var r = p.executeQuery();
+        if (r.next()) {
+            Date t = r.getDate("tgl");
+            pel.setSelectedItem(r.getString("pel"));
+            tgl.setText(t.toString());
+        } r.close();
+        p.close();
     }
 
     private void refresh() {
@@ -241,7 +262,7 @@ public abstract class Add1 extends javax.swing.JDialog {
     }
 
     private void pilihPel() {
-        try {
+        if (0 < pel.getSelectedIndex()) try {
             Db d = new Db();
             java.sql.PreparedStatement p = d.prep("select*from pelanggan where kode=? and not hapus");
             p.setString(1, pel.getItemAt(pel.getSelectedIndex()));
@@ -261,20 +282,17 @@ public abstract class Add1 extends javax.swing.JDialog {
     }
 
     private void savingStrk() {
-        Time j = Time.valueOf(LocalTime.now()); try {
+        try {
             Db d = new Db();
-            String nota = genNota(d);
-            java.sql.PreparedStatement p = d.prep("insert into jual values(?,?,?,?,0,0,0,?,?)");
-            p.setString(1, nota);
-            p.setDate(2, Date.valueOf(LocalDate.parse(tgl.getText())));
-            p.setTime(3, j);
-            p.setString(4, pel.getItemAt(pel.getSelectedIndex()));
-            p.setString(5, "-");
-            p.setBoolean(6, false);
+            var p = d.prep("update jual set tgl=?,pel=? where nota=?");
+            p.setDate(1, Date.valueOf(tgl.getText()));
+            p.setString(2, pel.getItemAt(pel.getSelectedIndex()));
+            p.setString(3, nota);
             p.execute();
             p.close();
+            reset(d);
             d.close();
-            Add2 a = new Add2(f, false, nota){
+            var a = new Add2(par, false, nota){
                 @Override
                 public void reload1() {
                     reload();
@@ -282,20 +300,29 @@ public abstract class Add1 extends javax.swing.JDialog {
             }; a.setVisible(true);
             setVisible(false);
         } catch (SQLException ex) {
+            purify();
             Db.hindar(ex);
-        } reload();
+        }
     }
 
-    private String genNota(Db d) throws SQLException {
-        String s = pel.getItemAt(pel.getSelectedIndex());
-        Date t = Date.valueOf(LocalDate.parse(tgl.getText()));
-        s += '_' + t.getTime() + 'b';
-        java.sql.PreparedStatement p = d.prep("select count(nota)as a from jual where tgl=?");
-        p.setDate(1, t);
-        java.sql.ResultSet r = p.executeQuery();
-        if (r.next()) s += r.getString("a");
-        r.close();
+    private void purify() {
+        refresh();
+        pel.setEnabled(true);
+        tgl.setEnabled(true);
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }
+
+    private void reset(Db d) throws SQLException {
+        var p = d.prep("select brg,jum from item_ju where nota=?");
+        p.setString(1, nota);
+        var r = p.executeQuery();
+        while (r.next()) {
+            var p1 = d.prep("update barang set stok=stok+? where kode=?");
+            p1.setDouble(1, r.getDouble("jum"));
+            p1.setString(2, r.getString("brg"));
+            p1.execute();
+            p1.close();
+        } r.close();
         p.close();
-        return s;
     }
 }

@@ -28,7 +28,7 @@ public abstract class Laporan extends javax.swing.JDialog {
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                reload();
+                akhir();
             }
         });
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
@@ -36,5 +36,9 @@ public abstract class Laporan extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         setContentPane(v.getContentPane());
         setSize(v.getPreferredSize());
+    }
+
+    private void akhir() {
+        new Thread(this::reload).start();
     }
 }

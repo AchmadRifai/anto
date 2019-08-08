@@ -5,14 +5,11 @@
  */
 package jtoko.anto.jual;
 
-import java.awt.event.KeyEvent;
+import java.awt.Color;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
+import java.text.ParseException;
 import jtoko.anto.Db;
 import jtoko.anto.tools.Deleter;
-import jtoko.anto.tools.Loader;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -23,8 +20,8 @@ import net.sf.jasperreports.engine.JasperFillManager;
  */
 public abstract class Add2 extends javax.swing.JDialog {
     private String nota, sBrg;
-    private double totI, kblI;
     java.awt.Frame par;
+    private java.util.List<jtoko.anto.beans.BijiJual> l;
 
     public abstract void reload1();
     /**
@@ -34,6 +31,7 @@ public abstract class Add2 extends javax.swing.JDialog {
         super(parent, modal);
         par = parent;
         this.nota = nota;
+        l = new java.util.LinkedList<>();
         initComponents();
     }
 
@@ -242,9 +240,7 @@ public abstract class Add2 extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        int s = JOptionPane.showConfirmDialog(rootPane, "Apa anda ingin menunda penjualan ini?", "Tunda?", JOptionPane.YES_NO_OPTION);
-        if (s != JOptionPane.YES_OPTION) new Thread(this::hapusNota).start();
-        else new Thread(this::reload1).start();
+        new Thread(this::backup).start();
     }//GEN-LAST:event_formWindowClosing
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -263,52 +259,25 @@ public abstract class Add2 extends javax.swing.JDialog {
 
     private void srcBrgKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_srcBrgKeyReleased
         srcBrg.setEnabled(false);
-        if ("".equals(srcBrg.getText())) new Thread(this::muatBrg).start();
-        else new Thread(this::cariBrg).start();
+        if ("".equals(srcBrg.getText())) muatBrg();
+        else cariBrg();
     }//GEN-LAST:event_srcBrgKeyReleased
 
     private void jumJualKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jumJualKeyReleased
-        if (Deleter.isDoubleValid(jumJual) && evt.getKeyCode() != KeyEvent.VK_LEFT && evt.getKeyCode() != KeyEvent.VK_RIGHT
-                && !evt.isShiftDown() && !evt.isControlDown()) {
-            jumJual.setEnabled(false);
-            new Thread(this::tmpJumJual).start();
-        }
+        if (sBrg != null && !"".equals(jumJual.getText()) && Deleter.isDoubleValid(jumJual)) {
+            if (isehOno()) updateList();
+            else iseniList();
+        } muattblItem();
     }//GEN-LAST:event_jumJualKeyReleased
 
     private void byrKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_byrKeyReleased
-        if (Deleter.isDoubleValid(byr) && evt.getKeyCode() != KeyEvent.VK_LEFT && evt.getKeyCode() != KeyEvent.VK_RIGHT
-                && !evt.isShiftDown() && !evt.isControlDown() && !"".equals(byr.getText())) {
-            try {
-                Db d = new Db();
-                susuk(d);
-                d.close();
-            } catch (SQLException ex) {
-                Db.hindar(ex);
-            }
-        }
+        if (!"".equals(byr.getText()) && Deleter.isLongValid(byr)) susuk();
     }//GEN-LAST:event_byrKeyReleased
 
     private void finActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finActionPerformed
-        new Thread(this::simpanTrans).start();
         stun();
+        new Thread(this::simpan).start();
     }//GEN-LAST:event_finActionPerformed
-
-    private void hapusNota() {
-        try {
-            Db d = new Db();
-            java.sql.PreparedStatement p = d.prep("delete from jual where nota=?"), 
-                    p2 = d.prep("delete from item_ju where nota=?");
-            p2.setString(1, nota);
-            p2.execute();
-            p.setString(1, nota);
-            p2.close();
-            p.execute();
-            p.close();
-            d.close();
-        } catch (SQLException ex) {
-            Db.hindar(ex);
-        } reload1();
-    }
 
     private void muatBrg() {
         var m = new javax.swing.table.DefaultTableModel(new String[]{"Kode", "Nama", "Harga", "Stok"}, 0){
@@ -318,20 +287,23 @@ public abstract class Add2 extends javax.swing.JDialog {
             }
         }; tblBrg.setModel(m); try {
             Db d = new Db();
+            reverse(d);
             java.sql.ResultSet r = d.hasil("select kode,nm,jual,stok,sat from barang where not hapus and stok>0");
             while (r.next()) m.addRow(new String[]{r.getString("kode"), r.getString("nm"), r.getString("jual"), r.getString("stok") +
             ' ' + r.getString("sat")});
             r.close();
-            totalan(d);
+            muatIteme(d);
             d.close();
-        } catch (SQLException ex) {
+        } catch (SQLException | ParseException ex) {
             Db.hindar(ex);
         } setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        sBrg = null;
-        srcBrg.setEnabled(true);
-        srcBrg.setText("");
-        jumJual.setEnabled(false);
-        jumJual.setText("0");
+        if (l.isEmpty()) {
+            sBrg = null;
+            srcBrg.setEnabled(true);
+            srcBrg.setText("");
+            jumJual.setEnabled(false);
+            jumJual.setText("0");
+        }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFormattedTextField byr;
@@ -369,6 +341,7 @@ public abstract class Add2 extends javax.swing.JDialog {
             ' ' + r.getString("sat")});
             r.close();
             p.close();
+            muatUang(d);
             d.close();
         } catch (SQLException ex) {
             Db.hindar(ex);
@@ -377,62 +350,6 @@ public abstract class Add2 extends javax.swing.JDialog {
         jumJual.setEnabled(false);
         srcBrg.setEnabled(true);
         jumJual.setText("0");
-    }
-
-    private void tmpJumJual() {
-        try {
-            Db d = new Db();
-            double hrg = Loader.hrgBrg(d, sBrg);
-            var p = d.prep("select jum from item_ju where nota=? and brg=?");
-            p.setString(1, nota);
-            p.setString(2, sBrg);
-            var r = p.executeQuery();
-            if (r.next()) {
-                var p1 = d.prep("update item_ju set jum=?,tot=?::numeric::money where nota=? and brg=?");
-                p1.setDouble(1, Double.parseDouble(jumJual.getText()));
-                p1.setDouble(2, hrg * Double.parseDouble(jumJual.getText()));
-                p1.setString(3, nota);
-                p1.setString(4, sBrg);
-                p1.execute();
-                p1.close();
-            } else {
-                var p1 = d.prep("insert into item_ju values(?,?,?,?::numeric::money,?::numeric::money)");
-                p1.setString(1, nota);
-                p1.setString(2, sBrg);
-                p1.setDouble(3, Double.parseDouble(jumJual.getText()));
-                p1.setDouble(4, hrg);
-                p1.setDouble(5, hrg * Double.parseDouble(jumJual.getText()));
-                p1.execute();
-                p1.close();
-            } r.close();
-            p.close();
-            d.close();
-        } catch (SQLException ex) {
-            Db.hindar(ex);
-        } jumJual.setEnabled(true);
-        jumJual.setFocusable(true);
-        muatItem();
-    }
-
-    private void muatItem() {
-        try {
-            Db d = new Db();
-            var m = new javax.swing.table.DefaultTableModel(new String[]{"Barang", "Jumlah", "Hrg Satuan", "Subtotal"}, 0){
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            } }; itemJu.setModel(m);
-            java.sql.PreparedStatement p = d.prep("select brg,jum,sat,tot from item_ju where nota=?");
-            p.setString(1, nota);
-            java.sql.ResultSet r = p.executeQuery();
-            while (r.next()) m.addRow(new String[]{r.getString("brg"), r.getString("jum"), r.getString("sat"), r.getString("tot")});
-            r.close();
-            p.close();
-            totalan(d);
-            d.close();
-        } catch (SQLException ex) {
-            Db.hindar(ex);
-        }
     }
 
     private void bukaBrg() {
@@ -454,67 +371,18 @@ public abstract class Add2 extends javax.swing.JDialog {
         }
     }
 
-    private void totalan(Db d) throws SQLException {
-        var p = d.prep("select sum(sat*jum)as akeh from item_ju where nota=?");
-        p.setString(1, nota);
-        var r = p.executeQuery();
-        if (r.next()) tot.setText(r.getString("akeh"));
-        else tot.setText("-");
-        r.close();
-        p.close();
-        var p1 = d.prep("select sum(sat*jum)::numeric::float8 as akeh from item_ju where nota=?");
-        p1.setString(1, nota);
-        var r1 = p1.executeQuery();
-        if (r1.next()) {
-            if (null == r1.getBigDecimal("akeh")) totI = 0;
-            else totI = r1.getDouble("akeh");
-        } else totI = 0;
-        r1.close();
-        p1.close();
-        if (!"".equals(byr.getText()) && Deleter.isDoubleValid(byr)) susuk(d);
-    }
-
-    private void susuk(Db d) throws SQLException {
-        double byrI = Double.parseDouble(byr.getText());
-        var p = d.prep("select ?::numeric::money as akeh");
-        kblI = byrI - totI;
-        p.setDouble(1, kblI);
-        var r = p.executeQuery();
-        if (r.next()) kbl.setText(r.getString("akeh"));
-        r.close();
-        p.close();
-        fin.setEnabled(0 < itemJu.getRowCount() && 0 <= kblI);
-    }
-
     private void stun() {
         setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        srcBrg.setEnabled(false);
+        jumJual.setEnabled(false);
         byr.setEnabled(false);
         fin.setEnabled(false);
     }
 
-    private void simpanTrans() {
-        try {
-            Db d = new Db();
-            var p = d.prep("update jual set byr=?::numeric::money,tot=?::numeric::money,kbl=?::numeric::money where "
-                    + "nota=? and not hapus");
-            p.setDouble(1, totI + kblI);
-            p.setDouble(2, totI);
-            p.setDouble(3, kblI);
-            p.setString(4, nota);
-            p.execute();
-            p.close();
-            preCetak(d);
-            sudo(d);
-            d.close();
-            setVisible(false);
-        } catch (SQLException | JRException ex) {
-            purify();
-            Db.hindar(ex);
-        }
-    }
-
     private void purify() {
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        srcBrg.setEnabled(true);
+        jumJual.setEnabled(true);
         byr.setEnabled(true);
         fin.setEnabled(true);
     }
@@ -534,7 +402,7 @@ public abstract class Add2 extends javax.swing.JDialog {
     }
 
     private void preCetak(Db d) throws JRException {
-        java.util.Map<String,Object>m=new java.util.HashMap<String,Object>();
+        java.util.Map<String,Object>m=new java.util.HashMap<>();
         m.put("nota", nota);
         var lap = new jtoko.anto.tools.Laporan(par, false, JasperFillManager.fillReport(
                 JasperCompileManager.compileReport(jtoko.anto.tools.SuratJalan.f.getAbsolutePath()), m, d.getC())) {
@@ -543,5 +411,183 @@ public abstract class Add2 extends javax.swing.JDialog {
                 reload1();
             }
         }; lap.setVisible(true);
+    }
+
+    private void reverse(Db d) throws SQLException {
+        var p = d.prep("select byr::numeric::float8>0 as a,kbl::numeric::float8>0 as b,tot::numeric::float8>0 as c from jual "
+                + "where not hapus and nota=?");
+        p.setString(1, nota);
+        var r = p.executeQuery();
+        if (r.next()) {
+            boolean a = r.getBoolean("a"), b = r.getBoolean("b"), c = r.getBoolean("c");
+            if ((a && c) || b) kblStok(d);
+        } r.close();
+        p.close();
+    }
+
+    private void kblStok(Db d) throws SQLException {
+        setTitle("Edit Penjualan " + nota);
+        var p = d.prep("select brg,jum from item_ju where nota=?");
+        p.setString(1, nota);
+        var r = p.executeQuery();
+        while (r.next()) {
+            var p1 = d.prep("update barang set stok=stok+? where kode=?");
+            p1.setBigDecimal(1, r.getBigDecimal("jum"));
+            p1.setString(2, r.getString("brg"));
+            p1.execute();
+            p1.close();
+        } r.close();
+        p.close();
+    }
+
+    private void muatUang(Db d) throws SQLException {
+        var p = d.prep("select byr::numeric::float8,kbl from jual where nota=?");
+        p.setString(1, nota);
+        var r = p.executeQuery();
+        if (r.next()) {
+            byr.setText(r.getString("byr"));
+            kbl.setText(r.getString("kbl"));
+        } r.close();
+        p.close();
+    }
+
+    private boolean isehOno() {
+        boolean b = false;
+        for (jtoko.anto.beans.BijiJual bj:l) 
+            if (sBrg == null ? bj.getBrg() == null : sBrg.equals(bj.getBrg())) {
+            b = true;
+            break;
+        } return b;
+    }
+
+    private void iseniList() {
+        try {
+            Db d = new Db();
+            var bj = new jtoko.anto.beans.BijiJual(sBrg, d);
+            double jum = Double.parseDouble(jumJual.getText());
+            if (bj.getMax() >= jum && jum > 0) {
+                bj.setJum(jum);
+                bj.setTot(bj.getSat().mul(jum));
+            } l.add(bj);
+            d.close();
+        } catch (SQLException | ParseException ex) {
+            Db.hindar(ex);
+        }
+    }
+
+    private void updateList() {
+        jtoko.anto.beans.BijiJual sbj = null;
+        for (jtoko.anto.beans.BijiJual bj:l) 
+            if (sBrg == null ? bj.getBrg() == null : sBrg.equals(bj.getBrg())) {
+            sbj = bj;
+            break;
+        } if (sbj != null) {
+            double jum = Double.parseDouble(jumJual.getText());
+            if (jum <= sbj.getMax() && jum > 0) {
+                sbj.setJum(jum);
+                sbj.setTot(sbj.getSat().mul(jum));
+            }
+        }
+    }
+
+    private void muattblItem() {
+        var m = new javax.swing.table.DefaultTableModel(new String[]{"Barang", "Jumlah", "Hrg Satuan", "Sub Total"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            } }; itemJu.setModel(m);
+        var t = new jtoko.anto.tools.Uang(0);
+        for (jtoko.anto.beans.BijiJual bj:l) {
+            t = t.add(bj.getSat().mul(bj.getJum()));
+            m.addRow(new String[]{bj.getBrg(), "" + bj.getJum(), "" + bj.getSat(), "" + bj.getTot()});
+        } tot.setText("" + t);
+        susuk();
+    }
+
+    private void susuk() {
+        try {
+            var t = new jtoko.anto.tools.Uang(tot.getText());
+            var b = new jtoko.anto.tools.Uang(Long.parseUnsignedLong(byr.getText()));
+            var k = b.min(t);
+            kbl.setText("" + k);
+            if (0 > k.toLong()) byr.setForeground(Color.red);
+            else byr.setForeground(Color.BLACK);
+        } catch (ParseException ex) {
+            byr.setForeground(Color.red);
+            Db.hindar(ex);
+        } fin.setEnabled(0 < l.size() && Color.BLACK == byr.getForeground());
+    }
+
+    private void muatIteme(Db d) throws SQLException, ParseException {
+        var p1 = d.prep("select brg,jum,sat from item_ju where nota=?");
+        p1.setString(1, nota);
+        var r1 = p1.executeQuery();
+        while (r1.next()) {
+            var bj = new jtoko.anto.beans.BijiJual(r1.getString("brg"), d);
+            bj.setJum(r1.getDouble("jum"));
+            bj.setSat(new jtoko.anto.tools.Uang(r1.getString("sat")));
+            bj.setTot(bj.getSat().mul(bj.getJum()));
+            l.add(bj);
+        } r1.close();
+        p1.close();
+        var p2 = d.prep("select tot,byr::numeric::float8 as a,kbl from jual where nota=? and not hapus");
+        p2.setString(1, nota);
+        var r2 = p2.executeQuery();
+        if (r2.next()) {
+            tot.setText(r2.getString("tot"));
+            byr.setText(r2.getString("a"));
+            kbl.setText(r2.getString("kbl"));
+        } r2.close();
+        p2.close();
+        var p3 = d.prep("delete from item_ju where nota=?");
+        p3.setString(1, nota);
+        p3.execute();
+        p3.close();
+        muattblItem();
+    }
+
+    private void simpan() {
+        try {
+            Db d = new Db();
+            var t = new jtoko.anto.tools.Uang(tot.getText());
+            var k = new jtoko.anto.tools.Uang(kbl.getText());
+            var p = d.prep("update jual set tot=?,byr=?,kbl=? where nota=? and not hapus");
+            p.setLong(1, t.toLong());
+            p.setLong(2, Long.parseLong(byr.getText()));
+            p.setLong(3, k.toLong());
+            p.setString(4, nota);
+            p.execute();
+            p.close();
+            insList(d);
+            preCetak(d);
+            sudo(d);
+            d.close();
+        } catch (SQLException | ParseException | JRException ex) {
+            purify();
+            Db.hindar(ex);
+        }
+    }
+
+    private void insList(Db d) throws SQLException {
+        for (jtoko.anto.beans.BijiJual bj:l) {
+            var p = d.prep("insert into item_ju values(?,?,?,?,?)");
+            p.setString(1, nota);
+            p.setString(2, bj.getBrg());
+            p.setDouble(3, bj.getJum());
+            p.setLong(4, bj.getSat().toLong());
+            p.setLong(5, bj.getTot().toLong());
+            p.execute();
+            p.close();
+        }
+    }
+
+    private void backup() {
+        try {
+            Db d = new Db();
+            insList(d);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        } reload1();
     }
 }
