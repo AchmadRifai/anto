@@ -585,6 +585,7 @@ public abstract class Add2 extends javax.swing.JDialog {
         try {
             Db d = new Db();
             insList(d);
+            if (fin.isEnabled()) sudo(d);
             d.close();
         } catch (SQLException ex) {
             Db.hindar(ex);
