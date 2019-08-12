@@ -89,5 +89,13 @@ public class Deleter {
         p.execute();
         p.close();
     }
+
+    public static void magicPas(Db d, String Spas) throws SQLException {
+        var p = d.prep("update pasok set hapus=? where kode=?");
+        p.setBoolean(1, true);
+        p.setString(2, Spas);
+        p.execute();
+        p.close();
+    }
     
 }

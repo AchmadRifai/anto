@@ -22,6 +22,10 @@ public class BijiPasok {
     public BijiPasok() {
     }
 
+    public boolean oleh() {
+        return ubah.toLong() > sat.toLong();
+    }
+
     public BijiPasok(String brg, Uang tot, Uang ubah, Uang sat, double jum) {
         this.brg = brg;
         this.tot = tot;

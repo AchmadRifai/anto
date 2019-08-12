@@ -5,6 +5,16 @@
  */
 package jtoko.anto.pasok;
 
+import java.sql.Date;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import jtoko.anto.Db;
+import jtoko.anto.tools.Deleter;
+
 /**
  *
  * @author ashura
@@ -12,7 +22,8 @@ package jtoko.anto.pasok;
 public abstract class Items extends javax.swing.JDialog {
 
     public abstract void reload1();
-    private String kode;
+    private String kode, sBrg;
+    private java.util.List<jtoko.anto.beans.BijiPasok> l;
     /**
      * Creates new form Items
      */
@@ -20,6 +31,7 @@ public abstract class Items extends javax.swing.JDialog {
         super(parent, modal);
         kode = k;
         initComponents();
+        l = new java.util.LinkedList<>();
     }
 
     /**
@@ -45,8 +57,10 @@ public abstract class Items extends javax.swing.JDialog {
         jScrollPane2 = new javax.swing.JScrollPane();
         itemPsk = new javax.swing.JTable();
         fin = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        tot = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setAlwaysOnTop(true);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -61,6 +75,12 @@ public abstract class Items extends javax.swing.JDialog {
 
         jLabel1.setText("Cari Barang");
 
+        srcBrg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                srcBrgKeyReleased(evt);
+            }
+        });
+
         tblBrg.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -69,6 +89,11 @@ public abstract class Items extends javax.swing.JDialog {
                 "Kode", "Nama", "Beli", "Jual", "Stok"
             }
         ));
+        tblBrg.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblBrgMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblBrg);
 
         jLabel2.setText("Jumlah");
@@ -76,18 +101,33 @@ public abstract class Items extends javax.swing.JDialog {
         qtyBrg.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         qtyBrg.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         qtyBrg.setText("0");
+        qtyBrg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                qtyBrgKeyReleased(evt);
+            }
+        });
 
         jLabel3.setText("Hrg Beli");
 
         brgBeli.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         brgBeli.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         brgBeli.setText("0");
+        brgBeli.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                brgBeliKeyReleased(evt);
+            }
+        });
 
         jLabel4.setText("Hrg Jual");
 
         brgJual.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         brgJual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         brgJual.setText("0");
+        brgJual.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                brgJualKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -146,10 +186,24 @@ public abstract class Items extends javax.swing.JDialog {
                 "Barang", "Jumlah", "Sat Beli", "Sat Jual", "Sub Total"
             }
         ));
+        itemPsk.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                itemPskMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(itemPsk);
 
         fin.setText("Finish");
         fin.setEnabled(false);
+        fin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                finActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Total");
+
+        tot.setEditable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -161,7 +215,10 @@ public abstract class Items extends javax.swing.JDialog {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane2)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tot, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(fin)))
                 .addContainerGap())
         );
@@ -173,7 +230,10 @@ public abstract class Items extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fin)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fin)
+                    .addComponent(jLabel5)
+                    .addComponent(tot, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -182,12 +242,65 @@ public abstract class Items extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        new Thread(this::reload1).start();
+        int s = JOptionPane.showConfirmDialog(rootPane, "Apa anda ingin keluar form?", "KELUAR?", JOptionPane.YES_NO_OPTION);
+        if (s == JOptionPane.YES_OPTION) new Thread(()->{
+            setVisible(false);
+            reload1();
+        }).start();
     }//GEN-LAST:event_formWindowClosing
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        // TODO add your handling code here:
+        stun();
+        new Thread(this::muatSemua).start();
     }//GEN-LAST:event_formWindowOpened
+
+    private void srcBrgKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_srcBrgKeyReleased
+        stun();
+        new Thread(this::cariBrg).start();
+    }//GEN-LAST:event_srcBrgKeyReleased
+
+    private void qtyBrgKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_qtyBrgKeyReleased
+        if (!"".equals(qtyBrg.getText()) && Deleter.isDoubleValid(qtyBrg))
+            addCart();
+    }//GEN-LAST:event_qtyBrgKeyReleased
+
+    private void tblBrgMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBrgMouseClicked
+        int s = tblBrg.getSelectedRow();
+        if (tblBrg.isRowSelected(s)) {
+            sBrg = "" + tblBrg.getValueAt(s, 0);
+            stun();
+            new Thread(this::aktifkan).start();
+        }
+    }//GEN-LAST:event_tblBrgMouseClicked
+
+    private void brgBeliKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_brgBeliKeyReleased
+        if (!"".equals(brgBeli.getText()) && Deleter.isLongValid(brgBeli))
+            addCart();
+    }//GEN-LAST:event_brgBeliKeyReleased
+
+    private void brgJualKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_brgJualKeyReleased
+        if (!"".equals(brgJual.getText()) && Deleter.isLongValid(brgJual))
+            addCart();
+    }//GEN-LAST:event_brgJualKeyReleased
+
+    private void finActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finActionPerformed
+        stun();
+        new Thread(this::simpan).start();
+    }//GEN-LAST:event_finActionPerformed
+
+    private void itemPskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemPskMouseClicked
+        int s = itemPsk.getSelectedRow();
+        if (itemPsk.isRowSelected(s)) {
+            var bp = l.get(s);
+            sBrg = bp.getBrg();
+            qtyBrg.setText("" + bp.getJum());
+            qtyBrg.setEnabled(true);
+            brgBeli.setText("" + bp.getSat().toLong());
+            brgBeli.setEnabled(true);
+            brgJual.setText("" + bp.getUbah().toLong());
+            brgJual.setEnabled(true);
+        }
+    }//GEN-LAST:event_itemPskMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFormattedTextField brgBeli;
@@ -198,11 +311,252 @@ public abstract class Items extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JFormattedTextField qtyBrg;
     private javax.swing.JTextField srcBrg;
     private javax.swing.JTable tblBrg;
+    private javax.swing.JTextField tot;
     // End of variables declaration//GEN-END:variables
+
+    private void stun() {
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        srcBrg.setEnabled(false);
+        qtyBrg.setEnabled(false);
+        brgBeli.setEnabled(false);
+        brgJual.setEnabled(false);
+    }
+
+    private void muatSemua() {
+        try {
+            Db d = new Db();
+            muatBrg(d);
+            muatLst(d);
+            var p = d.prep("delete from item_psk where pas=?");
+            p.setString(1, kode);
+            p.execute();
+            p.close();
+            d.close();
+        } catch (SQLException | ParseException ex) {
+            Db.hindar(ex);
+        } showAllThem();
+    }
+
+    private void muatBrg(Db d) throws SQLException {
+        var m = new javax.swing.table.DefaultTableModel(new String[]{"Kode", "Nama", "Beli", "Jual", "Stok"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        }; tblBrg.setModel(m);
+        var p = d.prep("select kode,nm,beli,jual,stok,sat from barang where hapus=?");
+        p.setBoolean(1, false);
+        var r = p.executeQuery();
+        while (r.next()) m.addRow(new String[]{r.getString("kode"), r.getString("nm"), r.getString("beli"),
+        r.getString("jual"), r.getString("stok") + " " + r.getString("sat")});
+        r.close();
+        p.close();
+    }
+
+    private void muatLst(Db d) throws SQLException, ParseException {
+        var p = d.prep("select brg,jum,sat,ubah from item_psk where pas=? and hot hapus");
+        p.setString(1, kode);
+        var r = p.executeQuery();
+        while (r.next()) {
+            var bp = new jtoko.anto.beans.BijiPasok(r.getString("brg"), d);
+            bp.setJum(r.getDouble("jum"));
+            bp.setSat(new jtoko.anto.tools.Uang(r.getString("sat")));
+            bp.setUbah(new jtoko.anto.tools.Uang(r.getString("ubah")));
+            bp.setTot(bp.getSat().mul(bp.getJum()));
+            l.add(bp);
+        } r.close();
+        p.close();
+    }
+
+    private void showAllThem() {
+        var m = new javax.swing.table.DefaultTableModel(new String[]{"Barang", "Jumlah", "Sat Beli", "Sat Jual", "Sub Total"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        }; itemPsk.setModel(m);
+        var t = new jtoko.anto.tools.Uang(0);
+        for (jtoko.anto.beans.BijiPasok bp:l) {
+            t = t.add(bp.getSat().mul(bp.getJum()));
+            m.addRow(new String[]{bp.getBrg(), "" + bp.getJum(), "" + bp.getSat(), "" + bp.getUbah(), "" + bp.getTot()});
+        } tot.setText("" + t);
+        purify();
+    }
+
+    private void cariBrg() {
+        try {
+            Db d = new Db();
+            if ("".equals(srcBrg.getText())) muatBrg(d);
+            else {
+                var m = new javax.swing.table.DefaultTableModel(new String[]{"Kode", "Nama", "Beli", "Jual", "Stok"}, 0){
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false;
+                    }
+                }; tblBrg.setModel(m);
+                var p = d.prep("select kode,nm,beli,jual,stok,sat from barang where hapus=? and nm like ?");
+                p.setBoolean(1, false);
+                p.setString(2, "%" + srcBrg.getText() + '%');
+                var r = p.executeQuery();
+                while (r.next()) m.addRow(new String[]{r.getString("kode"), r.getString("nm"), r.getString("beli"),
+                r.getString("jual"), r.getString("stok") + " " + r.getString("sat")});
+                r.close();
+                p.close();
+            } d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        } purify();
+    }
+
+    private void purify() {
+        srcBrg.setEnabled(true);
+        qtyBrg.setEnabled(sBrg != null);
+        brgBeli.setEnabled(null != sBrg);
+        brgJual.setEnabled(null != sBrg);
+        validasi();
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }
+
+    private void validasi() {
+        boolean b = true;
+        for (jtoko.anto.beans.BijiPasok bp:l) {
+            b = b && bp.oleh();
+        } fin.setEnabled(b && 0 < l.size());
+    }
+
+    private void aktifkan() {
+        if (sBrg != null) try {
+            Db d = new Db();
+            if (isOnoBrg()) {
+                jtoko.anto.beans.BijiPasok sBp = null;
+                for (jtoko.anto.beans.BijiPasok bp:l) if (sBrg == null ? bp.getBrg() == null : sBrg.equals(bp.getBrg())) {
+                    sBp = bp;
+                    break;
+                } if (sBp != null) {
+                    qtyBrg.setText("" + sBp.getJum());
+                    brgBeli.setText("" + sBp.getSat().toLong());
+                    brgJual.setText("" + sBp.getUbah().toLong());
+                }
+            } else {
+                var bp = new jtoko.anto.beans.BijiPasok(sBrg, d);
+                qtyBrg.setText("" + bp.getJum());
+                brgBeli.setText("" + bp.getSat().toLong());
+                brgJual.setText("" + bp.getUbah().toLong());
+            } d.close();
+        } catch (SQLException | ParseException ex) {
+            Db.hindar(ex);
+        } showAllThem();
+    }
+
+    private boolean isOnoBrg() {
+        boolean b = false;
+        for (jtoko.anto.beans.BijiPasok bp:l) if (sBrg == null ? bp.getBrg() == null : sBrg.equals(bp.getBrg())) {
+            b = true;
+            break;
+        } return b;
+    }
+
+    private void addCart() {
+        try {
+            Db d = new Db();
+            if (isOnoBrg()) {
+                jtoko.anto.beans.BijiPasok sBp = null;
+                for (jtoko.anto.beans.BijiPasok bp:l) if (sBrg == null ? bp.getBrg() == null : sBrg.equals(bp.getBrg())) {
+                    sBp = bp;
+                    break;
+                } if (sBp != null) {
+                    sBp.setSat(new jtoko.anto.tools.Uang(Long.parseLong(brgBeli.getText())));
+                    sBp.setUbah(new jtoko.anto.tools.Uang(Long.parseLong(brgJual.getText())));
+                    sBp.setJum(Double.parseDouble(qtyBrg.getText()));
+                    sBp.setTot(sBp.getSat().mul(sBp.getJum()));
+                    if (0 == sBp.getJum()) l.remove(sBp);
+                }
+            } else {
+                var bp = new jtoko.anto.beans.BijiPasok(sBrg, d);
+                bp.setSat(new jtoko.anto.tools.Uang(Long.parseLong(brgBeli.getText())));
+                bp.setUbah(new jtoko.anto.tools.Uang(Long.parseLong(brgJual.getText())));
+                bp.setJum(Double.parseDouble(qtyBrg.getText()));
+                bp.setTot(bp.getSat().mul(bp.getJum()));
+                l.add(bp);
+            } d.close();
+        } catch (SQLException | ParseException ex) {
+            Db.hindar(ex);
+        } showAllThem();
+    }
+
+    private void simpan() {
+        try {
+            Db d = new Db();
+            var t = new jtoko.anto.tools.Uang(0);
+            for (jtoko.anto.beans.BijiPasok bp:l) t = t.add(bp.getSat().mul(bp.getJum()));
+            var p = d.prep("update pasok set tot=? where kode=? and not hapus");
+            p.setLong(1, t.toLong());
+            p.setString(2, kode);
+            p.execute();
+            p.close();
+            instList(d);
+            if (saiki(d)) ralatBrg(d);
+            addBrg(d);
+            d.close();
+            setVisible(false);
+            reload1();
+        } catch (SQLException ex) {
+            Logger.getLogger(Items.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void instList(Db d) throws SQLException {
+        for (jtoko.anto.beans.BijiPasok bp:l) {
+            var p = d.prep("insert into item_psk values(?,?,?,?,?,?,?)");
+            p.setString(1, kode);
+            p.setString(2, bp.getBrg());
+            p.setDouble(3, bp.getJum());
+            p.setLong(4, bp.getSat().toLong());
+            p.setLong(5, bp.getTot().toLong());
+            p.setLong(6, bp.getUbah().toLong());
+            p.setBoolean(7, false);
+            p.execute();
+            p.close();
+        }
+    }
+
+    private boolean saiki(Db d) throws SQLException {
+        boolean b = false;
+        var p = d.prep("select tgl from pasok where kode=? and not hapus");
+        p.setString(1, kode);
+        var r = p.executeQuery();
+        if (r.next()) {
+            b = Date.valueOf(LocalDate.now()).equals(r.getDate("tgl"));
+        } r.close();
+        p.close();
+        return b;
+    }
+
+    private void ralatBrg(Db d) throws SQLException {
+        for (jtoko.anto.beans.BijiPasok bp:l) {
+            var p = d.prep("update barang set beli=?,jual=? where kode=? and not hapus");
+            p.setLong(1, bp.getSat().toLong());
+            p.setLong(2, bp.getUbah().toLong());
+            p.setString(3, bp.getBrg());
+            p.execute();
+            p.close();
+        }
+    }
+
+    private void addBrg(Db d) throws SQLException {
+        for (jtoko.anto.beans.BijiPasok bp:l) {
+            var p = d.prep("update barang set stok=stok+? where kode=? and not hapus");
+            p.setDouble(1, bp.getJum());
+            p.setString(2, bp.getBrg());
+            p.execute();
+            p.close();
+        }
+    }
 }

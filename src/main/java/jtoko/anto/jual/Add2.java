@@ -8,6 +8,7 @@ package jtoko.anto.jual;
 import java.awt.Color;
 import java.sql.SQLException;
 import java.text.ParseException;
+import javax.swing.JOptionPane;
 import jtoko.anto.Db;
 import jtoko.anto.tools.Deleter;
 import net.sf.jasperreports.engine.JRException;
@@ -61,7 +62,7 @@ public abstract class Add2 extends javax.swing.JDialog {
         byr = new javax.swing.JFormattedTextField();
         fin = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Item Penjualan");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -155,6 +156,11 @@ public abstract class Add2 extends javax.swing.JDialog {
                 "Barang", "Jumlah", "Hrg Satuan", "Sub Total"
             }
         ));
+        itemJu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                itemJuMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(itemJu);
 
         jLabel3.setText("Total");
@@ -170,7 +176,7 @@ public abstract class Add2 extends javax.swing.JDialog {
         kbl.setEditable(false);
         kbl.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-        byr.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        byr.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         byr.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         byr.setText("0");
         byr.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -240,7 +246,11 @@ public abstract class Add2 extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        new Thread(this::backup).start();
+        int s = JOptionPane.showConfirmDialog(rootPane, "Apa anda ingin keluar?", "KELUAR?", JOptionPane.YES_NO_OPTION);
+        if (s == JOptionPane.YES_OPTION) new Thread(()->{
+            setVisible(false);
+            reload1();
+        }).start();
     }//GEN-LAST:event_formWindowClosing
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -253,7 +263,8 @@ public abstract class Add2 extends javax.swing.JDialog {
         int s = tblBrg.getSelectedRow();
         if (tblBrg.isRowSelected(s)) {
             sBrg = "" + tblBrg.getValueAt(s, 0);
-            new Thread(this::bukaBrg).start();
+            if (isehOno()) {
+            } else bukaBrg();
         }
     }//GEN-LAST:event_tblBrgMouseClicked
 
@@ -278,6 +289,15 @@ public abstract class Add2 extends javax.swing.JDialog {
         stun();
         new Thread(this::simpan).start();
     }//GEN-LAST:event_finActionPerformed
+
+    private void itemJuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemJuMouseClicked
+        int s = itemJu.getSelectedRow();
+        if (itemJu.isRowSelected(s)) {
+            var bj = l.get(s);
+            jumJual.setEnabled(true);
+            jumJual.setText("" + bj.getJum());
+        }
+    }//GEN-LAST:event_itemJuMouseClicked
 
     private void muatBrg() {
         var m = new javax.swing.table.DefaultTableModel(new String[]{"Kode", "Nama", "Harga", "Stok"}, 0){
@@ -385,20 +405,6 @@ public abstract class Add2 extends javax.swing.JDialog {
         jumJual.setEnabled(true);
         byr.setEnabled(true);
         fin.setEnabled(true);
-    }
-
-    private void sudo(Db d) throws SQLException {
-        var p = d.prep("select brg,jum from item_ju where nota=?");
-        p.setString(1, nota);
-        var r = p.executeQuery();
-        while (r.next()) {
-            var p1 = d.prep("update barang set stok=stok-? where kode=?");
-            p1.setDouble(1, r.getDouble("jum"));
-            p1.setString(2, r.getString("brg"));
-            p1.execute();
-            p1.close();
-        } r.close();
-        p.close();
     }
 
     private void preCetak(Db d) throws JRException {
@@ -560,8 +566,9 @@ public abstract class Add2 extends javax.swing.JDialog {
             p.close();
             insList(d);
             preCetak(d);
-            sudo(d);
             d.close();
+            setVisible(false);
+            reload1();
         } catch (SQLException | ParseException | JRException ex) {
             purify();
             Db.hindar(ex);
@@ -569,26 +576,6 @@ public abstract class Add2 extends javax.swing.JDialog {
     }
 
     private void insList(Db d) throws SQLException {
-        for (jtoko.anto.beans.BijiJual bj:l) {
-            var p = d.prep("insert into item_ju values(?,?,?,?,?)");
-            p.setString(1, nota);
-            p.setString(2, bj.getBrg());
-            p.setDouble(3, bj.getJum());
-            p.setLong(4, bj.getSat().toLong());
-            p.setLong(5, bj.getTot().toLong());
-            p.execute();
-            p.close();
-        }
-    }
-
-    private void backup() {
-        try {
-            Db d = new Db();
-            insList(d);
-            if (fin.isEnabled()) sudo(d);
-            d.close();
-        } catch (SQLException ex) {
-            Db.hindar(ex);
-        } reload1();
+        for (jtoko.anto.beans.BijiJual bj:l) bj.simpan(d, nota);
     }
 }

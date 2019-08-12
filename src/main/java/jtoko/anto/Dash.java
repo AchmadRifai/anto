@@ -630,6 +630,11 @@ public class Dash extends javax.swing.JFrame {
         editPas.setFocusable(false);
         editPas.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         editPas.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        editPas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editPasActionPerformed(evt);
+            }
+        });
         jToolBar5.add(editPas);
 
         delPas.setText("Hapus");
@@ -637,6 +642,11 @@ public class Dash extends javax.swing.JFrame {
         delPas.setFocusable(false);
         delPas.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         delPas.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        delPas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                delPasActionPerformed(evt);
+            }
+        });
         jToolBar5.add(delPas);
 
         detPas.setText("Detail");
@@ -956,6 +966,15 @@ public class Dash extends javax.swing.JFrame {
         }; a.setVisible(true);
     }//GEN-LAST:event_addPasActionPerformed
 
+    private void delPasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delPasActionPerformed
+        int s = JOptionPane.showConfirmDialog(rootPane, "Apa anda ingin pasokan barang ini?", "Hapus?", JOptionPane.YES_NO_OPTION);
+        hapusPasIni();
+    }//GEN-LAST:event_delPasActionPerformed
+
+    private void editPasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_editPasActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addBrg;
     private javax.swing.JButton addJu;
@@ -1207,6 +1226,7 @@ public class Dash extends javax.swing.JFrame {
     }
 
     private void laporkan() {
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
         java.util.Map<String,Object> m = new java.util.HashMap<>();
         m.put("nota", sJu); try {
             Db d = new Db();
@@ -1233,9 +1253,19 @@ public class Dash extends javax.swing.JFrame {
     }
 
     private void hapusSupIni() {
-        try {
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR)); try {
             Db d = new Db();
             Deleter.magicSup(d, sSup);
+            d.close();
+        } catch (SQLException ex) {
+            Db.hindar(ex);
+        } refresh();
+    }
+
+    private void hapusPasIni() {
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR)); try {
+            Db d = new Db();
+            Deleter.magicPas(d, Spas);
             d.close();
         } catch (SQLException ex) {
             Db.hindar(ex);
