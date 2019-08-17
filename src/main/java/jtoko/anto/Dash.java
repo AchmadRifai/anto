@@ -7,8 +7,6 @@ package jtoko.anto;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import jtoko.anto.tools.Analizer;
@@ -49,6 +47,7 @@ public class Dash extends javax.swing.JFrame {
         root = new javax.swing.JPanel();
         jToolBar6 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         brgLaku = new javax.swing.JPanel();
         pnlLaba = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -129,6 +128,17 @@ public class Dash extends javax.swing.JFrame {
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar6.add(jButton1);
+
+        jButton2.setText("Tempat Sampah");
+        jButton2.setFocusable(false);
+        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jToolBar6.add(jButton2);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -654,15 +664,42 @@ public class Dash extends javax.swing.JFrame {
         detPas.setFocusable(false);
         detPas.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         detPas.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        detPas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                detPasActionPerformed(evt);
+            }
+        });
         jToolBar5.add(detPas);
 
         jLabel6.setText("Cari Pasokan Dari Kode");
 
-        orderPas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        srcPas.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                srcPasKeyReleased(evt);
+            }
+        });
+
+        orderPas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Kode", "Jam", "Pemasok", "Total", "Ket" }));
+        orderPas.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                orderPasKeyReleased(evt);
+            }
+        });
 
         descPas.setText("Z -> A");
+        descPas.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                descPasStateChanged(evt);
+            }
+        });
 
         jLabel7.setText("Tanggal Pasok");
+
+        tglPas.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                tglPasItemStateChanged(evt);
+            }
+        });
 
         tblPas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -672,6 +709,11 @@ public class Dash extends javax.swing.JFrame {
                 "Kode", "Jam", "Pemasok", "Total", "Ket"
             }
         ));
+        tblPas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblPasMouseClicked(evt);
+            }
+        });
         jScrollPane5.setViewportView(tblPas);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
@@ -972,8 +1014,97 @@ public class Dash extends javax.swing.JFrame {
     }//GEN-LAST:event_delPasActionPerformed
 
     private void editPasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPasActionPerformed
-        // TODO add your handling code here:
+        var e = new jtoko.anto.pasok.Edit(this, false, Spas) {
+            @Override
+            public void reload() {
+                refresh();
+            }
+        }; e.setVisible(true);
     }//GEN-LAST:event_editPasActionPerformed
+
+    private void detPasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detPasActionPerformed
+        var d = new jtoko.anto.pasok.Det(this, false, Spas) {
+            @Override
+            public void reload() {
+                refresh();
+            }
+        }; d.setVisible(true);
+    }//GEN-LAST:event_detPasActionPerformed
+
+    private void tglPasItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tglPasItemStateChanged
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        new Thread(()->{
+            try {
+                Db d = new Db();
+                Loader.muatPasok(d, tblPas, srcPas.getText(), orderPas.getSelectedIndex(), descPas.isSelected(),
+                    tglPas.getItemAt(tglPas.getSelectedIndex()));
+                d.close();
+            } catch (SQLException ex) {
+                Db.hindar(ex);
+            } setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        }).start();
+    }//GEN-LAST:event_tglPasItemStateChanged
+
+    private void srcPasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_srcPasKeyReleased
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        new Thread(()->{
+            try {
+                Db d = new Db();
+                Loader.muatPasok(d, tblPas, srcPas.getText(), orderPas.getSelectedIndex(), descPas.isSelected(),
+                    tglPas.getItemAt(tglPas.getSelectedIndex()));
+                d.close();
+            } catch (SQLException ex) {
+                Db.hindar(ex);
+            } setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        }).start();
+    }//GEN-LAST:event_srcPasKeyReleased
+
+    private void orderPasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_orderPasKeyReleased
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        new Thread(()->{
+            try {
+                Db d = new Db();
+                Loader.muatPasok(d, tblPas, srcPas.getText(), orderPas.getSelectedIndex(), descPas.isSelected(),
+                    tglPas.getItemAt(tglPas.getSelectedIndex()));
+                d.close();
+            } catch (SQLException ex) {
+                Db.hindar(ex);
+            } setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        }).start();
+    }//GEN-LAST:event_orderPasKeyReleased
+
+    private void descPasStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_descPasStateChanged
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        new Thread(()->{
+            try {
+                Db d = new Db();
+                Loader.muatPasok(d, tblPas, srcPas.getText(), orderPas.getSelectedIndex(), descPas.isSelected(),
+                    tglPas.getItemAt(tglPas.getSelectedIndex()));
+                d.close();
+            } catch (SQLException ex) {
+                Db.hindar(ex);
+            } setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        }).start();
+    }//GEN-LAST:event_descPasStateChanged
+
+    private void tblPasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPasMouseClicked
+        int s = tblPas.getSelectedRow();
+        if (tblPas.isRowSelected(s)) {
+            Spas = "" + tblPas.getValueAt(s, 0);
+            delPas.setEnabled(true);
+            editPas.setEnabled(true);
+            detPas.setEnabled(true);
+        }
+    }//GEN-LAST:event_tblPasMouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        var s = new jtoko.anto.tools.Sampah(this, false) {
+            @Override
+            public void reload() {
+                refresh();
+            }
+        }; s.setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addBrg;
@@ -999,6 +1130,7 @@ public class Dash extends javax.swing.JFrame {
     private javax.swing.JButton editPel;
     private javax.swing.JButton editSup;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -1123,6 +1255,7 @@ public class Dash extends javax.swing.JFrame {
         orderPas.setSelectedIndex(0);
         descPas.setSelected(false);
         Loader.muatTglPasok(d, tglPas);
+        tglPas.setSelectedIndex(0);
         Loader.muatPasok(d, tblPas, srcPas.getText(), orderPas.getSelectedIndex(), descPas.isSelected(),
                 tglPas.getItemAt(tglPas.getSelectedIndex()));
     }

@@ -303,4 +303,68 @@ public class Loader {
         r.close();
     }
 
+    static void muatRstBarang(Db d, JTable tbl) throws SQLException {
+        var m = new javax.swing.table.DefaultTableModel(new String[]{"Kode", "Nama", "Harga", "Stok", "Ket"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        }; tbl.setModel(m);
+        var r = d.hasil("select kode,nm,jual,stok,sat,ket from barang where hapus order by nm");
+        while (r.next()) m.addRow(new String[]{r.getString("kode"), r.getString("nm"), r.getString("jual"), r.getString("stok") +
+                ' ' + r.getString("sat"), r.getString("ket")});
+        r.close();
+    }
+
+    static void muatRstPel(Db d, JTable tbl) throws SQLException {
+        var m = new javax.swing.table.DefaultTableModel(new String[]{"Kode", "NIK", "Nama", "Alamat", "Telp"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        }; tbl.setModel(m);
+        var r = d.hasil("select kode,nik,nama,almt,tlp from pelanggan where hapus order by nama");
+        while (r.next()) m.addRow(new String[]{r.getString("kode"), r.getString("nik"), r.getString("nama"), r.getString("almt"),
+        r.getString("tlp")});
+        r.close();
+    }
+
+    static void muatRstSup(Db d, JTable tbl) throws SQLException {
+        var m = new javax.swing.table.DefaultTableModel(new String[]{"Kode", "Nama", "Alamat", "Telp"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        }; tbl.setModel(m);
+        var r = d.hasil("select kode,nama,almt,tlp from suplier where hapus order by nama");
+        while (r.next()) m.addRow(new String[]{r.getString("kode"), r.getString("nama"), r.getString("almt"), r.getString("tlp")});
+        r.close();
+    }
+
+    static void muatRstJual(Db d, JTable tbl) throws SQLException {
+        var m = new javax.swing.table.DefaultTableModel(new String[]{"Nota", "Tanggal", "Jam", "Pelanggan", "Total", "Ket"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        }; tbl.setModel(m);
+        var r = d.hasil("select nota,tgl,jam,pel,tot,ket from jual where hapus order by tgl desc");
+        while (r.next()) m.addRow(new String[]{r.getString("nota"), r.getString("tgl"), r.getString("jam"), r.getString("pel"),
+        r.getString("tot"), r.getString("ket")});
+        r.close();
+    }
+
+    static void muatRstPas(Db d, JTable tbl) throws SQLException {
+        var m = new javax.swing.table.DefaultTableModel(new String[]{"Kode", "Tanggal", "Jam", "Pemasok", "Total", "Ket"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        }; tbl.setModel(m);
+        var r = d.hasil("select kode,tgl,jam,sup,tot,ket from pasok where hapus order by tgl desc");
+        while (r.next()) m.addRow(new String[]{r.getString("kode"), r.getString("tgl"), r.getString("jam"), r.getString("sup"),
+        r.getString("tot"), r.getString("ket")});
+        r.close();
+    }
+
 }

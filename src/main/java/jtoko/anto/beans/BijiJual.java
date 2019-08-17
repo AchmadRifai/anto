@@ -86,18 +86,25 @@ public class BijiJual {
     }
 
     public void simpan(Db d, String nota) throws SQLException {
-        if (ono(d, nota)) balik(d);
+        if (ono(d, nota)) balik(d, nota);
         if (!ono(d, nota)) mlebu(d, nota);
         else ubah(d, nota);
         sudo(d);
     }
 
-    private void balik(Db d) throws SQLException {
-        var p = d.prep("update barang set stok=stok+? where kode=? and not hapus");
-        p.setDouble(1, jum);
-        p.setString(2, brg);
-        p.execute();
-        p.close();
+    private void balik(Db d, String nota) throws SQLException {
+        var p1 = d.prep("select jum from item_ju where nota=? and brg=?");
+        p1.setString(1, nota);
+        p1.setString(2, brg);
+        var r = p1.executeQuery();
+        if (r.next()) {
+            var p = d.prep("update barang set stok=stok+? where kode=? and not hapus");
+            p.setDouble(1, r.getDouble("jum"));
+            p.setString(2, brg);
+            p.execute();
+            p.close();
+        } r.close();
+        p1.close();
     }
 
     private void mlebu(Db d, String nota) throws SQLException {
